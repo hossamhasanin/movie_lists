@@ -7,6 +7,7 @@ import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_bloc.dart';
 import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_event.dart';
 import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_state.dart';
 import 'package:movie_lists/screens/main_screens/widgets.dart';
+import 'package:movie_lists/screens/movie_list/movies.dart';
 import 'package:movies_lists_repo/movies_lists_repo.dart';
 
 class HomePage extends StatefulWidget {
@@ -222,60 +223,67 @@ class _HomePageState extends State<HomePage> {
   Widget buildListTile(MovieList list){
     final randomColor = tileColors[rand.nextInt(tileColors.length-1)];
     final width = MediaQuery.of(context).size.width;
-    return Container(
-      width: width,
-      padding: EdgeInsets.all(10.0),
-      margin: EdgeInsets.only(left: 10.0 , top: 10.0 , right: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 3.0,
-            offset: Offset(0.0, 1.0)
-          )
-        ]
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            child: Row(
-              children: [
-                Icon(
-                  Icons.movie,
-                  color: randomColor,
-                  size: 20.0,
-                ),
-                SizedBox(width: 10.0,),
-                Text(
-                  list.title,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  style: TextStyle(
-                      fontFamily: "Montserrat",
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold
+    return GestureDetector(
+      onTap: (){
+        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context){
+          return MoviesPage(list: list,);
+        }));
+      },
+      child: Container(
+        width: width,
+        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.only(left: 10.0 , top: 10.0 , right: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              blurRadius: 3.0,
+              offset: Offset(0.0, 1.0)
+            )
+          ]
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.movie,
+                    color: randomColor,
+                    size: 20.0,
                   ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 5.0,),
-          Container(
-            child: Text(
-              list.desc,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-              style: TextStyle(
-                fontFamily: "Montserrat",
-                fontSize: 15.0,
+                  SizedBox(width: 10.0,),
+                  Text(
+                    list.title,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: TextStyle(
+                        fontFamily: "Montserrat",
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          // Divider(color: Colors.grey,thickness: 2.0,)
-        ],
+            SizedBox(height: 5.0,),
+            Container(
+              child: Text(
+                list.desc,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: TextStyle(
+                  fontFamily: "Montserrat",
+                  fontSize: 15.0,
+                ),
+              ),
+            ),
+            // Divider(color: Colors.grey,thickness: 2.0,)
+          ],
+        ),
       ),
     );
   }

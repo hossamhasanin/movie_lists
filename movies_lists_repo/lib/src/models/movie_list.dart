@@ -8,15 +8,15 @@ class MovieList {
   final String id;
   final String title;
   final String desc;
-  final List<String> members;
+  final List members;
   final Timestamp createdAt;
 
-  MovieList({ this.desc , String title = '', List<String> members = const [] , String id , this.createdAt})
+  MovieList({ this.desc , String title = '', List members = const [] , String id , this.createdAt})
       : this.title = title ?? '',
         this.members = members ?? [],
         this.id = id;
 
-  MovieList copyWith({String id, String title, List<String> members , String desc}) {
+  MovieList copyWith({String id, String title, List members , String desc}) {
     return MovieList(
       desc: desc ?? this.desc,
       id: id ?? this.id,

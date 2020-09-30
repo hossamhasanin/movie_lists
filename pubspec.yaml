@@ -31,10 +31,14 @@ dependencies:
   firebase_core: "0.5.0"
   firebase_auth: ^0.18.0+1
   kiwi: ^2.0.0
+  web_scraper: ^0.0.6
+  fluttertoast: ^7.1.1
   movies_lists_repo:
     path: movies_lists_repo
   user_repo:
     path: user_repo
+  movies_repo:
+    path: movies_repo
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -62,6 +66,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/facebook.png
+    - assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

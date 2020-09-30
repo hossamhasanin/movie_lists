@@ -5,7 +5,7 @@ class MovieListEntity extends Equatable {
   final String id;
   final String title;
   final String desc;
-  final List<String> members;
+  final List members;
   final Timestamp createdAt;
 
   const MovieListEntity(this.desc, this.id, this.title , this.members ,  this.createdAt);

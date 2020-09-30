@@ -31,7 +31,7 @@ class MovieListBloc extends Bloc<MovieListsEvent , MovieListState>{
       if (event is AddList){
         yield AddingList();
         yield* validateAddFields(event.title, event.desc);
-        final list = MovieList(id : DateTime.now().millisecond.toString(),title: event.title , members: [mAuth.currentUser.uid] , desc: event.desc);
+        final list = MovieList(id : DateTime.now().millisecondsSinceEpoch.toString(),title: event.title , members: [mAuth.currentUser.uid] , desc: event.desc);
         await _repo.addNewList(list);
         yield AddedList();
         yield* fetchLists(null);
