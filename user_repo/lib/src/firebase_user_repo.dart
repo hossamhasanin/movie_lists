@@ -2,13 +2,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:user_repo/src/user_model.dart' as UserModel;
-import 'package:user_repo/src/user_repo.dart';
+import 'user_repo.dart';
 
 class FirebaseUserRepo implements UserRepo{
 
   final FirebaseAuth firebaseAuth;
+  // UserModel.User cu = UserModel.User.currentUser;
 
   FirebaseUserRepo({this.firebaseAuth});
+  final usersCollection = FirebaseFirestore.instance.collection("users");
 
   @override
   Future<void> authenticate(String email , String pass) async {
@@ -36,6 +38,26 @@ class FirebaseUserRepo implements UserRepo{
     }catch (e){
       return Future.error(e);
     }
+  }
+
+  @override
+  Future<QuerySnapshot> getContacts() {
+    return usersCollection.where("addedBy" , arrayContains: firebaseAuth.currentUser.uid).get();
+  }
+
+  @override
+  Future<QuerySnapshot> findContact(String query, String field) {
+    return usersCollection.where(field , isEqualTo: query).get();
+  }
+
+  @override
+  Future<void> addOrDeleteContact(UserModel.User user) {
+    return usersCollection.doc(user.id).update(user.toMap());
+  }
+
+  @override
+  Stream<DocumentSnapshot> getCurrentUser() {
+    return usersCollection.doc(firebaseAuth.currentUser.uid).snapshots();
   }
 
 

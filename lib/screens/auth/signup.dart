@@ -17,22 +17,26 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  TextEditingController _controller;
-  // TextEditingController emailController;
-  // TextEditingController usernameController;
+  TextEditingController emailController;
+  TextEditingController usernameController;
+  TextEditingController passController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    _controller = TextEditingController();
+    emailController = TextEditingController();
+    usernameController = TextEditingController();
+    passController = TextEditingController();
 
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    emailController.dispose();
+    usernameController.dispose();
+    passController.dispose();
     super.dispose();
   }
 
@@ -80,7 +84,7 @@ class _SignupPageState extends State<SignupPage> {
                           child: Column(
                             children: <Widget>[
                               TextFormField(
-                                controller: _controller,
+                                controller: emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 onChanged: (value){
                                   context.bloc<AuthBloc>().add(EmailChanged(email: value , login: false));
@@ -99,7 +103,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                               SizedBox(height: 10.0),
                               TextFormField(
-                                controller: _controller,
+                                controller: passController,
                                 onChanged: (value){
                                   context.bloc<AuthBloc>().add(PasswordChanged(pass: value , login: false));
                                 },
@@ -116,7 +120,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                               SizedBox(height: 10.0),
                               TextFormField(
-                                controller: _controller,
+                                controller: usernameController,
                                 onChanged: (value){
                                   context.bloc<AuthBloc>().add(UserNameChanged(username: value));
                                 },
@@ -136,7 +140,9 @@ class _SignupPageState extends State<SignupPage> {
                                   child: GestureDetector(
                                     onTap: () {
                                       if (state is! Authenticating){
-                                        _controller.clear();
+                                        emailController.clear();
+                                        passController.clear();
+                                        usernameController.clear();
                                         context.bloc<AuthBloc>().add(SignUp());
                                       }
                                     },

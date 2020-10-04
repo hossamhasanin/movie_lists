@@ -6,7 +6,7 @@ import 'package:kiwi/kiwi.dart';
 import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_bloc.dart';
 import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_event.dart';
 import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_state.dart';
-import 'package:movie_lists/screens/main_screens/widgets.dart';
+import 'file:///F:/Projects/Android_projects/flutter/projects/movie_lists/lib/screens/widgets/main_widgets.dart';
 import 'package:movie_lists/screens/movie_list/movies.dart';
 import 'package:movies_lists_repo/movies_lists_repo.dart';
 
@@ -31,6 +31,12 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     bloc.add(FetchList());
+  }
+
+  @override
+  void dispose(){
+    bloc.close();
+    super.dispose();
   }
 
   showAddListDialog(BuildContext context){
@@ -161,13 +167,13 @@ class _HomePageState extends State<HomePage> {
                             "Make new One",
                             style: TextStyle(
                                 fontFamily: "Montserrat",
-                                fontSize: 18.0,
+                                fontSize: 16.0,
                                 fontWeight: FontWeight.bold
                             ),
                           ),
                           Icon(
                             Icons.add_to_queue,
-                            size: 25.0,
+                            size: 22.0,
                             color: Colors.blue,
                           )
                         ],
@@ -262,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                     maxLines: 2,
                     style: TextStyle(
                         fontFamily: "Montserrat",
-                        fontSize: 20.0,
+                        fontSize: 18.0,
                         fontWeight: FontWeight.bold
                     ),
                   ),

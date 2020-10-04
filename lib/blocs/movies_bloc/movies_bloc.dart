@@ -74,8 +74,9 @@ class MovieBloc extends Bloc<MoviesEvent , MoviesState>{
         await movieRepo.addNewMovie(movie, event.listId);
         addWatcher.add(AddedMovie());
 
-        final movies = await loadMovies(event.listId);
-        yield LoadedMovies(movies: movies);
+        // final movies = await loadMovies(event.listId);
+        // yield LoadedMovies(movies: movies);
+        add(LoadMovies(listId: event.listId));
       } else {
         addWatcher.add(AddMovieFailed(error: "Can not load url !!"));
       }
@@ -83,5 +84,9 @@ class MovieBloc extends Bloc<MoviesEvent , MoviesState>{
       addWatcher.add(AddMovieFailed(error: e.toString()));
     }
   }
-
+@override
+  Future<void> close() {
+    addWatcher.close();
+    return super.close();
+  }
 }

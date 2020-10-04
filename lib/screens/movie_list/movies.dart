@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,7 +8,7 @@ import 'package:kiwi/kiwi.dart';
 import 'package:movie_lists/blocs/movies_bloc/movies_bloc.dart';
 import 'package:movie_lists/blocs/movies_bloc/movies_enents.dart';
 import 'package:movie_lists/blocs/movies_bloc/movies_states.dart';
-import 'package:movie_lists/screens/main_screens/widgets.dart';
+import 'file:///F:/Projects/Android_projects/flutter/projects/movie_lists/lib/screens/widgets/main_widgets.dart';
 import 'package:movies_lists_repo/movies_lists_repo.dart';
 import 'package:movies_repo/movies_repo.dart';
 
@@ -22,7 +24,8 @@ class MoviesPage extends StatefulWidget {
 
 class _MoviesPageState extends State<MoviesPage> {
   final urlController = TextEditingController();
-
+  final tileColors = [Colors.blue , Colors.orange , Colors.pink , Colors.purple];
+  final rand = Random();
   final bloc = KiwiContainer().resolve<MovieBloc>();
   FToast fToast;
 
@@ -54,7 +57,7 @@ class _MoviesPageState extends State<MoviesPage> {
 
   @override
   void dispose(){
-    bloc.addWatcher.close();
+    bloc.close();
     super.dispose();
   }
 
@@ -152,10 +155,16 @@ class _MoviesPageState extends State<MoviesPage> {
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  title: Text(widget.list.title),
-                  pinned: true,
-                  expandedHeight: 200.0,
-                  flexibleSpace: flexibleSpace(widget.list),
+                  elevation: 10.0,
+                  automaticallyImplyLeading: false,
+                  leading: IconButton(
+                      icon: Icon(Icons.arrow_back , color: Colors.white,),
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      }
+                  ),
+                  expandedHeight: state is LoadedMovies? state.movies.isEmpty ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height*0.6 : MediaQuery.of(context).size.height*0.6,
+                  flexibleSpace: flexibleSpace(widget.list , state),
                 ),
                 stateDecide(state),
               ],
@@ -168,18 +177,8 @@ class _MoviesPageState extends State<MoviesPage> {
 
   Widget stateDecide(MoviesState state){
     if (state is LoadedMovies){
-      return SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisSpacing: 5.0 ,
-            crossAxisCount: 2 ,
-            childAspectRatio: 1.0 ,
-            mainAxisSpacing: 15.0),
-        delegate: SliverChildBuilderDelegate((context , index){
-          return gridItem(state.movies[index] , index);
-        },
-            childCount: state.movies.length
-        ),
-      );
+
+      return sliverList(state);
     } else if (state is LoadingMovies){
       return SliverList(delegate: SliverChildListDelegate(
         [
@@ -199,6 +198,32 @@ class _MoviesPageState extends State<MoviesPage> {
           ]
       ));
     }
+  }
+
+  Widget sliverList(LoadedMovies state){
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+          (BuildContext context , int index){
+            return listItem(state.movies[index], index);
+          },
+        childCount: state.movies.length
+      ),
+    );
+  }
+
+  Widget gridList(LoadedMovies state){
+    return SliverGrid(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 5.0 ,
+          crossAxisCount: 2 ,
+          childAspectRatio: 1.0 ,
+          mainAxisSpacing: 15.0),
+      delegate: SliverChildBuilderDelegate((context , index){
+        return gridItem(state.movies[index] , index);
+      },
+          childCount: state.movies.length
+      ),
+    );
   }
 
   Widget gridItem(Movie movie , int index){
@@ -243,27 +268,159 @@ class _MoviesPageState extends State<MoviesPage> {
     );
   }
 
+  Widget listItem(Movie movie , int index){
+    return Container(
+      margin: EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorDark,
+        borderRadius: BorderRadius.circular(15.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 7.0,
+            spreadRadius: 2.0
+          )
+        ]
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left:8.0),
+                  child: Text(
+                    movie.title,
+                    style: TextStyle(
+                      fontFamily: "Montserrat",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30.0,),
+                Padding(
+                  padding: const EdgeInsets.only(left:8.0),
+                  child: Text(
+                    movie.story,
+                    maxLines: 6,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: "Quicksand",
+                      fontSize: 14.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 50.0,)
+              ],
+            ),
+          ),
+          SizedBox(width: 20.0,),
+          Expanded(
+            child: AspectRatio(
+              aspectRatio: 0.71,
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      movie.img
+                    ),
+                    fit: BoxFit.fill
+                  ),
+                  borderRadius: BorderRadius.circular(15.0)
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
-  Widget flexibleSpace(MovieList list){
+
+  Widget flexibleSpace(MovieList list , MoviesState state){
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/movies_cover.jpg"),
+          image: AssetImage("assets/images/background.jpg"),
           fit: BoxFit.fill
         )
       ),
-      child: Center(
-        child: Text(
-          list.desc,
-          style: TextStyle(
-            fontFamily: "Montserrat",
-            fontSize: 15.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.white
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Spacer(flex: 2,),
+          Expanded(
+            child: Text(
+              list.title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      color: Colors.blue,
+                      blurRadius: 16.0,
+                    )
+                  ]
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            child: Text(
+              list.desc,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontStyle: FontStyle.italic,
+                  fontFamily: "Quicksand",
+                  shadows: [
+                    Shadow(
+                      color: Colors.blue,
+                      blurRadius: 14.0,
+                    )
+                  ]
+              ),
+            ),
+          ),
+          showEmptyMovieMessage(state),
+          Spacer()
+        ],
       ),
     );
+  }
+
+  Widget showEmptyMovieMessage(MoviesState state){
+    if (state is LoadedMovies){
+      if (state.movies.isEmpty){
+        return Expanded(
+          child: Text(
+              "There is no movies yet !",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontStyle: FontStyle.italic,
+                  fontFamily: "Quicksand",
+                  shadows: [
+                    Shadow(
+                      color: Colors.blue,
+                      blurRadius: 14.0,
+                    )
+                  ]
+              ),
+        )
+        );
+      }
+      return Container();
+    } else {
+      return Container();
+    }
   }
 
 }
