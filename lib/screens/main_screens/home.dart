@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_bloc.dart';
 import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_event.dart';
@@ -9,6 +10,7 @@ import 'package:movie_lists/blocs/movie_lists_bloc/movie_lists_state.dart';
 import 'file:///F:/Projects/Android_projects/flutter/projects/movie_lists/lib/screens/widgets/main_widgets.dart';
 import 'package:movie_lists/screens/movie_list/movies.dart';
 import 'package:movies_lists_repo/movies_lists_repo.dart';
+import 'package:user_repo/user_repo.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,7 +25,9 @@ class _HomePageState extends State<HomePage> {
   final rand = Random();
   final titleController = TextEditingController();
   final descController = TextEditingController();
-
+  RxList<String> checked = List<String>().obs;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -31,75 +35,26 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     bloc.add(FetchList());
+
+    bloc.shareStateController.listen((state) {
+      checked.clear();
+      if (state is SharingList){
+        Get.snackbar("Sharing", "Wait a bit ...");
+      }
+      if (state is SharedList){
+        Get.snackbar("Shared", "The list shared successfully ...");
+      }
+      if (state is SharedListFailed){
+        Get.snackbar("Error", state.error , duration: Duration(seconds: 6));
+      }
+    });
+
   }
 
   @override
   void dispose(){
     bloc.close();
     super.dispose();
-  }
-
-  showAddListDialog(BuildContext context){
-    Dialog dialog = Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Add New List",
-              style: TextStyle(
-                fontFamily: "Montserrat",
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0
-              ),
-            ),
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(
-                  labelText: "Title",
-                  labelStyle: TextStyle(
-                      fontFamily: "Montserrat",
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).primaryColor)
-                  )
-              ),
-            ),
-            SizedBox(height: 10.0,),
-            TextField(
-              controller: descController,
-              decoration: InputDecoration(
-                  labelText: "Description",
-                  labelStyle: TextStyle(
-                      fontFamily: "Montserrat",
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).primaryColor)
-                  )
-              ),
-            ),
-            SizedBox(height: 10.0),
-            RaisedButton(
-              onPressed: (){
-                bloc.add(AddList(title: titleController.text , desc: descController.text));
-                Navigator.of(context).pop();
-              },
-              color: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: Text("Add" , style: TextStyle(color: Colors.white),),
-            )
-          ],
-        ),
-      ),
-    );
-    showDialog(context: context , builder: (BuildContext context) => dialog);
   }
 
   @override
@@ -255,23 +210,34 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.movie,
-                    color: randomColor,
-                    size: 20.0,
-                  ),
-                  SizedBox(width: 10.0,),
-                  Text(
-                    list.title,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    style: TextStyle(
-                        fontFamily: "Montserrat",
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.movie,
+                          color: randomColor,
+                          size: 20.0,
+                        ),
+                        SizedBox(width: 10.0,),
+                        Text(
+                          list.title,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontFamily: "Montserrat",
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  IconButton(icon: Icon(Icons.share , color: Colors.black,), onPressed: (){
+                    bloc.add(GetContacts());
+                    showShareDialog(context , list);
+                  })
                 ],
               ),
             ),
@@ -303,4 +269,164 @@ class _HomePageState extends State<HomePage> {
     return false;
   }
 
+  showAddListDialog(BuildContext context){
+    Dialog dialog = Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Add New List",
+              style: TextStyle(
+                  fontFamily: "Montserrat",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0
+              ),
+            ),
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                  labelText: "Title",
+                  labelStyle: TextStyle(
+                      fontFamily: "Montserrat",
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Theme.of(context).primaryColor)
+                  )
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            TextField(
+              controller: descController,
+              decoration: InputDecoration(
+                  labelText: "Description",
+                  labelStyle: TextStyle(
+                      fontFamily: "Montserrat",
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Theme.of(context).primaryColor)
+                  )
+              ),
+            ),
+            SizedBox(height: 10.0),
+            RaisedButton(
+              onPressed: (){
+                bloc.add(AddList(title: titleController.text , desc: descController.text));
+                Navigator.of(context).pop();
+              },
+              color: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              child: Text("Add" , style: TextStyle(color: Colors.white),),
+            )
+          ],
+        ),
+      ),
+    );
+    showDialog(context: context , builder: (BuildContext context) => dialog);
+  }
+  showShareDialog(BuildContext context , MovieList list){
+    Dialog dialog = Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Share the list with your contacts",
+              style: TextStyle(
+                  fontFamily: "Montserrat",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0
+              ),
+            ),
+            Container(
+              height: 200.0,
+              child: Obx(
+                () {
+                  if (bloc.shareStateController.value is GettingContacts){
+                    return Center(child: CircularProgressIndicator());
+                  }else if (bloc.shareStateController.value is GotContactsFailed) {
+                    return Center(child: Text((bloc.shareStateController.value as GotContactsFailed).error));
+                  } else if (bloc.shareStateController.value is GotContacts) {
+                    GotContacts state = bloc.shareStateController.value;
+                    if (state.contacts.isEmpty){
+                      return Center(
+                        child: Text("You don't have approved contacts"),
+                      );
+                    } else {
+                      return CheckedList(contacts: state.contacts , checked: checked,list: list,);
+                    }
+                  } else {
+                    return Container();
+                  }
+                }
+              ),
+            ),
+            RaisedButton(
+              onPressed: (){
+                print("koko checked >" + checked[0]);
+                bloc.add(ShareList(contacts: checked , list: list));
+                Navigator.of(context).pop();
+              },
+              color: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              child: Text("Share" , style: TextStyle(color: Colors.white),),
+            )
+          ],
+        ),
+      ),
+    );
+    showDialog(context: context , builder: (BuildContext context) => dialog);
+  }
+
 }
+
+class CheckedList extends StatefulWidget {
+
+  List<User> contacts;
+  List<String> checked;
+  MovieList list;
+
+  CheckedList({this.contacts , this.checked , this.list});
+
+  @override
+  _CheckedListState createState() => _CheckedListState();
+}
+
+class _CheckedListState extends State<CheckedList> {
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: widget.contacts.length,
+      itemBuilder: (context , index){
+        return CheckboxListTile(
+            value: widget.checked.contains(widget.contacts[index].id) ? true : false,
+            title: Text(widget.contacts[index].username),
+            subtitle: widget.list.members.contains(widget.contacts[index].id) ? Text("Already member")
+                : null,
+            onChanged: widget.list.members.contains(widget.contacts[index].id) ? null : (bool value){
+              print("koko " + widget.list.members.join(","));
+              setState(() {
+                if (value){
+                  widget.checked += [widget.contacts[index].id];
+                } else {
+                  widget.checked.remove(widget.contacts[index].id);
+                }
+              });
+            }
+        );
+      },
+    );
+  }
+}
+

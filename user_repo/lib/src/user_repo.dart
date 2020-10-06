@@ -12,10 +12,11 @@ abstract class UserRepo{
   Stream<DocumentSnapshot> getCurrentUser();
 
   Future<QuerySnapshot> getContacts();
+  Future<QuerySnapshot> getApprovedContacts();
 
   Future<QuerySnapshot> findContact(String query , String field);
 
-  Future<void> addOrDeleteContact(UserModel.User user);
+  Future<void> updateUser(UserModel.User user);
   // Future<void> cuAddApprovedContact();
 
   String getUserId();

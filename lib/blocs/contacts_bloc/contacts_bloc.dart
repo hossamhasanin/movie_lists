@@ -66,14 +66,14 @@ class ContactsBloc extends Bloc<ContactsEvent , ContactsState>{
         );
         User.currentUser = User.currentUser.copyWith(approvedBy: User.currentUser.approvedBy+[user.id]);
         // update my list of approved people
-        await userRepo.addOrDeleteContact(User.currentUser);
+        await userRepo.updateUser(User.currentUser);
       } else {
         user = user.copyWith(
             addedBy: user.addedBy+[User.currentUser.id]
         );
       }
 
-      await userRepo.addOrDeleteContact(user);
+      await userRepo.updateUser(user);
       adUcontactController.value = ContactAdded();
       add(LoadContacts());
     }catch (e){
@@ -89,9 +89,9 @@ class ContactsBloc extends Bloc<ContactsEvent , ContactsState>{
       if (event.user.approvedBy.contains(User.currentUser.id)){
         event.user.approvedBy.remove(User.currentUser.id);
         User.currentUser.approvedBy.remove(event.user.id);
-        await userRepo.addOrDeleteContact(User.currentUser);
+        await userRepo.updateUser(User.currentUser);
       }else {
-        await userRepo.addOrDeleteContact(event.user);
+        await userRepo.updateUser(event.user);
       }
 
       adUcontactController.value = ContactDeleted();

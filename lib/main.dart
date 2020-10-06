@@ -9,9 +9,10 @@ import 'package:movie_lists/blocs/auth_blocs/auth_bloc.dart';
 import 'package:movie_lists/blocs/auth_blocs/auth_events.dart';
 import 'package:movie_lists/dependencies.dart';
 import 'package:movie_lists/screens/TappedModel.dart';
-import 'file:///F:/Projects/Android_projects/flutter/projects/movie_lists/lib/screens/auth/login.dart';
-import 'file:///F:/Projects/Android_projects/flutter/projects/movie_lists/lib/screens/widgets/main_widgets.dart';
+import 'package:movie_lists/screens/auth/login.dart';
 import 'package:user_repo/user_repo.dart';
+
+import 'screens/widgets/main_widgets.dart';
 
 void main() {
   injectDependencies();
@@ -40,12 +41,7 @@ class MyApp extends StatelessWidget {
 
             if (snapshot.connectionState == ConnectionState.done){
               //injectDependencies();
-              return BlocProvider<AuthBloc>(
-                  create: (context){
-                    return KiwiContainer().resolve<AuthBloc>()..add(IsAuthenticated());
-                  },
-                  child: LoginPage(),
-                  );
+              return LoginPage();
             }
 
             return Center(

@@ -16,7 +16,7 @@ injectDependencies(){
   ..registerFactory<MovieListRepo>((container) => FirebaseMovieList())
   ..registerFactory<MovieRepo>((container) => FirebaseMovieRepo())
   ..registerFactory((container) => WebScraper(IMDB_URL))
-  ..registerFactory((container) => MovieListBloc(repo: container.resolve()))
+  ..registerFactory((container) => MovieListBloc(repo: container.resolve() , userRepo: container.resolve()))
   ..registerFactory((container) => MovieBloc(movieRepo: container.resolve() , webScraper: container.resolve()))
   ..registerFactory((container) => ContactsBloc(userRepo: container.resolve()))
   ..registerFactory((container) => AuthBloc(userRepo: container.resolve()));

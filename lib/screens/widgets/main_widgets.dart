@@ -1,10 +1,23 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_lists/screens/auth/login.dart';
 
-AppBar appBar(String title){
+AppBar appBar(String title , BuildContext context){
   return AppBar(
     title: Text(title , style: TextStyle(color: Colors.white),),
     centerTitle: true,
+    actions: [
+      IconButton(
+        icon: Icon(Icons.logout , color: Colors.white,),
+        onPressed: (){
+          FirebaseAuth.instance.signOut();
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
+            return LoginPage();
+          }));
+        },
+      )
+    ],
   );
 }
 

@@ -7,7 +7,7 @@ abstract class MovieListRepo{
 
   Future<void> deleteList(MovieList list);
 
-  Future<QuerySnapshot> lists(MovieList lastItem , String userId);
+  Stream<QuerySnapshot> lists(String userId);
 
   Future<void> updateList(MovieList list);
 }

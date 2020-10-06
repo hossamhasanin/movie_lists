@@ -37,7 +37,7 @@ class _MoviesPageState extends State<MoviesPage> {
     fToast = FToast();
     fToast.init(context);
 
-    bloc.add(LoadMovies(listId: widget.list.id));
+    bloc.add(CheckIfRegistered(listId: widget.list.id));
 
     bloc.addWatcher.stream.listen((state) {
       if (state is AddingMovie){

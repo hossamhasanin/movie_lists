@@ -23,11 +23,8 @@ class FirebaseMovieList implements MovieListRepo{
   }
 
   @override
-  Future<QuerySnapshot> lists(MovieList lastItem , String userId) {
-    if (lastItem == null){
-      return listsCollection.where("members" , arrayContains: userId).orderBy("createdAt" , descending: true).limit(LISTS_LIMIT).get();
-    }
-    return listsCollection.where("members" , arrayContains: userId).orderBy("createdAt" , descending: true).limit(LISTS_LIMIT).startAfter([lastItem]).get();
+  Stream<QuerySnapshot> lists(String userId) {
+    return listsCollection.where("members" , arrayContains: userId).orderBy("createdAt" , descending: true).snapshots();
   }
 
   @override

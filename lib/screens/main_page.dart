@@ -46,7 +46,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar("Movie Lists"),
+      appBar: appBar("Movie Lists" , context),
       body: IndexedStack(
         index: _currentIndex,
         children: [

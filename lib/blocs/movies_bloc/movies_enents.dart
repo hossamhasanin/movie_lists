@@ -34,3 +34,11 @@ class LoadMoreMovies extends MoviesEvent{
   // TODO: implement props
   List<Object> get props => [listId , lastItem];
 }
+
+class CheckIfRegistered extends MoviesEvent{
+  final String listId;
+  const CheckIfRegistered({this.listId});
+  @override
+  // TODO: implement props
+  List<Object> get props => [listId];
+}

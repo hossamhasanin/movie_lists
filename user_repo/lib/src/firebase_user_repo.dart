@@ -46,12 +46,17 @@ class FirebaseUserRepo implements UserRepo{
   }
 
   @override
+  Future<QuerySnapshot> getApprovedContacts() {
+    return usersCollection.where("approvedBy" , arrayContains: firebaseAuth.currentUser.uid).orderBy("id").get();
+  }
+
+  @override
   Future<QuerySnapshot> findContact(String query, String field) {
     return usersCollection.where(field , isEqualTo: query).get();
   }
 
   @override
-  Future<void> addOrDeleteContact(UserModel.User user) {
+  Future<void> updateUser(UserModel.User user) {
     return usersCollection.doc(user.id).update(user.toMap());
   }
 

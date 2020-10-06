@@ -8,6 +8,13 @@ abstract class MovieListsEvent extends Equatable {
 }
 
 class FetchList extends MovieListsEvent{}
+class UpdateList extends MovieListsEvent{
+  final List<MovieList> list;
+  UpdateList({this.list});
+  @override
+  // TODO: implement props
+  List<Object> get props => [list];
+}
 class FetchMoreLists extends MovieListsEvent{
 
   final lastItem;
@@ -24,3 +31,10 @@ class AddList extends MovieListsEvent{
   const AddList({this.title , this.desc});
 }
 class DeleteList extends MovieListsEvent{}
+class GetContacts extends MovieListsEvent{}
+class ShareList extends MovieListsEvent{
+  final List<String> contacts;
+  final MovieList list;
+
+  const ShareList({this.contacts , this.list});
+}
