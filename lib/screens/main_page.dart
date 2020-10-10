@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kiwi/kiwi.dart';
-import 'package:user_repo/user_repo.dart';
+import 'package:movie_lists/blocs/main_page_bloc/main_page_bloc.dart';
 
 import 'TappedModel.dart';
 import 'widgets/main_widgets.dart';
@@ -16,30 +16,26 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
-  final userRepo = KiwiContainer().resolve<UserRepo>();
+  final bloc = KiwiContainer().resolve<MainPageBloc>();
 
-  StreamSubscription lis;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    lis = userRepo.getCurrentUser().listen((doc) {
-      if (doc.exists){
-        User.currentUser = User.fromSnapshot(doc);
-      } else {
-        Get.snackbar("userdata", "error not found profile");
-      }
-      print("koko ${User.currentUser.username}");
-    });
+    bloc.listenToCurrentUser();
+
+    bloc.saveDeviceToke();
+
+    bloc.notification(TappedModel.noti);
 
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    lis.cancel();
+    bloc.close();
     super.dispose();
   }
 

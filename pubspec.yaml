@@ -28,8 +28,10 @@ dependencies:
   equatable: ^1.2.5
   formz: ^0.3.1
   rxdart: ^0.24.1
-  firebase_core: "0.5.0"
+  shared_preferences: ^0.5.12
+  firebase_core: ^0.5.0+1
   cloud_firestore: ^0.14.0+2
+  firebase_messaging: ^7.0.3
   firebase_auth: ^0.18.0+1
   kiwi: ^2.0.0
   web_scraper: ^0.0.6
